@@ -1,0 +1,36 @@
+version: '4.16.3'
+
+networks:
+  default:
+
+services:
+  db:
+    image: mysql:8.0.32
+    container_name: coupons_database
+    ports:
+      - 3306:3306
+    volumes:
+        - "./.data/db:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: coupons_database
+    restart:
+      always
+
+  backend:
+    container_name: coupons_backend
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/coupons_database?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+    restart:
+      always
+
+
+
